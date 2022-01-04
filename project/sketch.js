@@ -1,173 +1,118 @@
-let arrows = [];
-let howManyXold, howManyYold 
+//Screen Variable
+let screenWidth = 500;
+let screenHeight = 500;
 
-
-let params = {
-	howManyX: 7,
-	howManyY: 9,
-	offsetX: 80,
-	offsetY: 60,
-	spacingX: 60,
-	spacingY: 60,
-	
-	shape: ['arrow', 'triangle'],
-	strokeWidth: 4,
-	strokeWidthMin:1,
-	strokeWidthMax:11,
-	strokeColor: '#00ddff',
-	fillColor: '#00dd00',
-	drawStroke: true,
-	fillStroke: false,
-
-	howManyXMin: 2,
-	howManyYMin: 2,
-	offsetXMin: 0,
-	offsetYMin: 0,
-	spacingXMin: 5,
-	spacingYMin: 5,
-
-
-	howManyXMax: 30,
-	howManyYMax: 20,
-	offsetXMax: 80,
-	offsetYMax: 80,
-	spacingXMax: 200,
-	spacingYMax: 200,
-
-	scale: 1,
-	scaleMin: 0.1,
-	scaleMax: 3,
-	scaleStep: 0.1
-}
-
-
-
-let gui;
+//Circle Variable
+let circleX = 210; //location of circleX
+let circleY = 30; //location of circleY
 
 function setup() {
-	createCanvas(800, 600);
-
-	// create the GUI
-	gui = createGui('Change Arrow Grid');
-	gui.addObject(params);
-
-	//calculate offsetX and offsetY to center the grid
-	//inside the canvas
-	params.offsetX = width - params.howManyX * params.spacingX/2;
-	params.offsetY = height - params.howManyY * params.spacingY/2;
-	arrows = buildArray(params.howManyX, params.howManyY);
-
-
-}
-
-function buildArray(x,y) {
-		console.log("===buildArray method!")
-		let tempArrows = []		//getting some arrows going
-		for (let i=0;i<x; i++) {
-			for (let j=0;j<y; j++){
-				let tempArrow = new Arrow(params.offsetX + (params.spacingX *i) , params.offsetY + (params.spacingY *j), 0, params.arrowScale)
-				tempArrows.push(tempArrow);
-			}
-		}
-		return tempArrows;
+  createCanvas(screenWidth, screenHeight); //From the screen variable
 }
 
 function draw() {
-    background(200,0,0);
-    //drawing some arrows from the Array
-	let index = 0;
+  background(76, 127, 127); //background color for the maze
+  fill(255); //fill for the circle(ball)
+  ellipse(circleX, circleY, 20, 20); //size of the circle and location
 
-	//check if change in howManyX or howManyY triggered through UI
-	if (howManyXold != params.howManyX || howManyYold != params.howManyY){
-		console.log("Arrow numbers changed. Rebuilding Array");
-		arrows = buildArray(params.howManyX, params.howManyY);
-		console.log("New array length: ", arrows.length);
-	}
+  //Keybuttons for Up & Down
+  //Conditions if and else if
+  //Strictly Equality Operators ===
+  // 38 is Up Arrow Key
+  // 40 is Down Arrow Key
+  if (keyIsPressed && keyCode === 40) {
+    circleY = circleY + 2;
+  } else if (keyIsPressed && keyCode === 38) {
+    circleY = circleY - 2;
+  }
 
-	for (let i=0;i<params.howManyY; i++) {
-		for (let j=0;j<params.howManyX; j++){
-			let curArrow = arrows[index];
-			//update curArrow object with refreshed params from UI
-			curArrow.x = params.offsetX + (params.spacingX * i)
-			curArrow.y = params.offsetY + (params.spacingY * j)
-			curArrow.sc = params.arrowScale
-			//console.log(curArrow)
-			
+  //direction of the circle(ball) when it goes up & down
+  if (circleY > 450) {
+    circleY = 450;
+  } else if (circleY < 0) {
+    circleY = 0;
+  }
 
-			curArrow.update(params);
-			curArrow.draw();
-			index = index + 1;
-		}
-	}
+  //Keybuttons for Right & Left
+  //Conditions if and else if
+  //Strictly Equality Operators ===
+  // 39 is Right Arrow Key
+  // 37 is Left Arrow Key
+  if (keyIsPressed && keyCode === 39) {
+    circleX = circleX + 2;
+  } else if (keyIsPressed && keyCode === 37) {
+    circleX = circleX - 2;
+  }
 
-	//update values in howManyXold and howManyYold to compare 
-	howManyXold = params.howManyX;
-	howManyYold = params.howManyY;
+  //direction of the circle(ball) when it goes left & right
+  if (circleX > 450) {
+    circleX = 450;
+  } else if (circleX < 0) {
+    circleX = 0;
+  }
 
-	
-
-}
-
-
-
-
-class Arrow {
-	constructor(x, y, rotation, sc) {
-		this.x = x;
-		this.y = y;
-		this.scale = sc;
-		this.fCol = '#ffffff';
-		this.strCol = '#ffffff';
-		this.strW = 5;
-		this.rotation = rotation;
-		this.strBool = true;
-		this.fillBool  = true;
-		
-	}
-
-    update(paraList) {
-        let dx = (mouseX/this.scale) - this.x;	
-        let dy = (mouseY/this.scale) - this.y; 
-		
-        let angle = atan2(dy, dx);
-        this.rotation = angle;
-		this.strBool = paraList.drawStroke;
-		this.strCol = paraList.strokeColor;
-		this.strW = paraList.strokeWidth;
-		this.fillBool = paraList.fillStroke;
-		this.fCol = paraList.fillColor;
-		this.scale = paraList.scale
-    }
-
-	draw() {
-		push();
-			
-			scale(this.scale)
-			translate(this.x/ this.scale, this.y / this.scale);
-			rotate(this.rotation);
-			if (this.fillBool) {
-				fill(this.fCol)
-			} else {
-				noFill();
-			}
-
-			if (this.strBool) {
-				strokeWeight(this.strW)
-				stroke(this.strCol);
-			}
-			else {
-				noStroke();
-			}
-			//arrow shape
-			/*line(-50, -25, 0, -25);
-			line(0, -25, 0, -50);
-			line(0, -50, 50, 0);
-			line(50, 0, 0, 50);
-			line(0, 50, 0, 25);
-			line(0, 25, -50, 25);
-			line(-50, 25, -50, -25);*/
-			//triangle
-			triangle(0,0,25,25,-25,25)
-		pop();
-	}
+  //Design of the Maze using line
+  stroke(255);
+  strokeWeight(6);
+  //Top left line corner
+  line(50, 50, 190, 50);
+  line(190, 50, 190, 130);
+  line(90, 90, 150, 90);
+  line(150, 90, 150, 170);
+  line(50, 50, 50, 130);
+  line(50, 130, 110, 130);
+  line(83, 130, 83, 170);
+  line(120, 170, 230, 170);
+  line(230, 50, 230, 80);
+  line(230, 120, 230, 250);
+  line(270, 50, 270, 170);
+  line(50, 210, 190, 210);
+  line(270, 250, 160, 250);
+  line(120, 210, 120, 290);
+  line(160, 330, 80, 330);
+  line(80, 330, 80, 250);
+  line(160, 330, 160, 290);
+  line(160, 290, 230, 290);
+  line(270, 250, 270, 330);
+  line(270, 330, 200, 330);
+  line(200, 410, 200, 290);
+  line(50, 130, 50, 450);
+  line(50, 370, 100, 370);
+  line(140, 370, 200, 370);
+  line(160, 410, 80, 410);
+  line(80, 410, 80, 450);
+  line(200, 410, 240, 410);
+  line(270, 290, 350, 290);
+  line(350, 290, 350, 210);
+  line(350, 210, 270, 210);
+  line(310, 210, 310, 250);
+  line(270, 170, 310, 170);
+  line(240, 370, 310, 370);
+  line(275, 370, 275, 450);
+  line(310, 370, 310, 330);
+  line(350, 330, 415, 330);
+  line(350, 330, 350, 370);
+  line(310, 410, 310, 450);
+  line(310, 410, 350, 410);
+  line(390, 410, 390, 370);
+  line(390, 370, 450, 370);
+  line(390, 410, 420, 410);
+  line(390, 290, 450, 290);
+  line(350, 170, 385, 170);
+  line(350, 210, 420, 210);
+  line(390, 250, 390, 330);
+  line(420, 210, 420, 250);
+  line(385, 210, 385, 90);
+  line(420, 170, 450, 170);
+  line(310, 90, 310, 130);
+  line(350, 90, 350, 50);
+  line(310, 130, 385, 130);
+  line(385, 90, 420, 90);
+  line(420, 130, 420, 170);
+  line(230, 50, 450, 50);
+  line(450, 50, 450, 290);
+  line(450, 330, 450, 450);
+  //bottom line
+  line(50, 450, 450, 450);
+  noStroke();
 }
