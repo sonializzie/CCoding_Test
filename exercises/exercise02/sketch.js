@@ -1,81 +1,59 @@
-
-
-let params = {
-	angle: 180,
-	angleMin: 0,
-    angleMax: 360,
-    angleStep: 5,
-
-	posX: 250,
-	posXMin: 0,
-    posXMax: 500,
-    posXStep: 2,
-    
-    posY: 250,
-	posYMin: 0,
-    posYMax: 500,
-    
-    shapeW: 150,
-	shapeWMin: 10,
-    shapeWMax: 290,
-
-    shapeH: 150,
-	shapeHMin: 10,
-    shapeHMax: 290,
-    
-    bgColor: [180, 255, 255],
-    fColor: [255, 0, 0],
-    fillToggle: true
-    
-}
-
-
-let myPos;
-let visible = true;
-var gui;
-
+let myBall1, myBall2, vy, vx;
 
 function setup() {
-    angleMode(DEGREES);
-    createCanvas(500, 500);
-    background(params.bgColor);
-    
-    myPos = createVector(params.posX, params.posY);
-    // create the GUI
-	gui = createGui('My Settings');
-	gui.addObject(params);
-    gui.setPosition(650, 250);
- 
-    
+  createCanvas(500, 500);
+  background(0);
+  myBall1 = new Ball(0, 0, 2, 3, 15, 255);
+  myBall2 = new Ball(250, 0, 2, 3, 15, 255);
+
+  myBall1.vx = 3 * cos(45);
+  myBall1.vy = 2 * sin(45);
+
+  myBall2.vx = 3 * cos(22.5);
+  myBall2.vy = 2 * sin(22.5);
+  angleMode(DEGREES);
 }
 
 function draw() {
-    clear();
-    myPos = createVector(params.posX, params.posY);
-    //console.log(myPos.x, myPos.y);
+  background(0);
 
-    background(params.bgColor);
-    rectMode(CENTER);
-
-    if (params.fillToggle == true) {
-        fill(params.fColor);
-    } else {
-        noFill();
-    }
-    push();
-    translate(myPos.x, myPos.y);
-    rotate(params.angle);
-        rect(0, 0,params.shapeW,params.shapeH, 25,75,25,75);
-    pop();
-}
-
-// check for keyboard events
-function keyPressed() {
-    switch(key) {
-      // type p to hide / show the GUI
-      case 'p':
-        visible = !visible;
-        if(visible) gui.show(); else gui.hide();
-        break;
-    }
+  //myBall1 Code
+  if (myBall1.x > 500 / 2) {
+    myBall1.vx = -myBall1.vx;
   }
+
+  if (myBall1.x < 0) {
+    myBall1.vx = -myBall1.vx;
+  }
+
+  if (myBall1.y > 500 / 2) {
+    myBall1.vy = -myBall1.vy;
+  }
+
+  if (myBall1.y < 0) {
+    myBall1.vy = -myBall1.vy;
+  }
+
+  myBall1.moveBall();
+  myBall1.drawBall();
+
+  //myBall2 Code
+  if (myBall2.x > 500 / 2 || myBall2.x > 500 * 2) {
+    myBall2.vx = -myBall2.vx;
+  }
+
+  if (myBall2.x < 0 || myBall2.x < 0) {
+    myBall2.vx = -myBall2.vx;
+  }
+
+  if (myBall2.y > 500 / 2 || myBall2.y > 500 * 2) {
+    myBall2.vy = -myBall2.vy;
+  }
+
+  if (myBall2.y < 0 || myBall2.y < 0) {
+    myBall2.vy = -myBall2.vy;
+  }
+
+  myBall2.moveBall();
+  myBall2.drawBall();
+}
